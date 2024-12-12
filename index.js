@@ -1,5 +1,5 @@
 "use strict";
-const monopolyGameArr1 = [
+const monopolyGameArray = [
     {
         "name": "GO",
         "type": "special",
@@ -274,7 +274,7 @@ const monopolyGameArr1 = [
         "hotelCost": 200
     }
 ];
-const gameBoardArr1 = [
+const gameBoardArray = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
     35, -1, -1, -1, -1, -1, -1, -1, -1, -1, 11,
     34, -1, -1, -1, -1, -1, -1, -1, -1, -1, 12,
@@ -285,25 +285,25 @@ const gameBoardArr1 = [
     29, -1, -1, -1, -1, -1, -1, -1, -1, -1, 17,
     28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18
 ];
-const gameBoard1 = document.querySelector(".monopoly-board");
-// Function to render the Monopoly game board
-function renderMonopolyBoard(monopolyGameArr1, gameBoardArr1, gameBoard1) {
-    gameBoardArr1.forEach((cellIndex, index) => {
+const gameBoardHtml = document.querySelector(".monopoly-board");
+function renderMonopolyBoard(monopolyGameArray, gameBoardArray, gameBoardHtml) {
+    gameBoardArray.forEach((cellIndex, index) => {
         const cell = document.createElement("div");
         cell.classList.add("board-cell");
         if (cellIndex === -1) {
             cell.classList.add("empty-cell");
         }
         else {
-            const boardItem = monopolyGameArr1[cellIndex];
+            const boardItem = monopolyGameArray[cellIndex];
             cell.classList.add("game-cell");
-            cell.setAttribute("data-name", boardItem.name);
+            // cell.setAttribute("data-name", boardItem.name);
+            cell.setAttribute("id", cellIndex.toString());
             cell.innerHTML = `
                 <div class="cell-name">${boardItem.name}</div>
                 <div class="cell-details">
                     ${boardItem.type === "property"
                 ? `<div class="cell-color" style="background-color: ${boardItem.color};"></div>
-                               <div class="cell-price">$${boardItem.price}</div>`
+                   <div class="cell-price">$${boardItem.price}</div>`
                 : boardItem.type === "special"
                     ? `<div class="cell-description">${boardItem.description}</div>`
                     : boardItem.type === "tax"
@@ -316,10 +316,10 @@ function renderMonopolyBoard(monopolyGameArr1, gameBoardArr1, gameBoard1) {
                 </div>
             `;
         }
-        gameBoard1.appendChild(cell);
+        gameBoardHtml.appendChild(cell);
     });
 }
-renderMonopolyBoard(monopolyGameArr1, gameBoardArr1, gameBoard1);
+renderMonopolyBoard(monopolyGameArray, gameBoardArray, gameBoardHtml);
 const players = [
     {
         name: "Player 1",
@@ -334,10 +334,9 @@ const players = [
         emoji: "🐞",
     }
 ];
-const playersBoxHtml = document.querySelector(".players-html");
+const playersBoxHtml = document.querySelector(".players-box-html");
 // Initialize player elements
 players.forEach((player, index) => {
-    // console.log(players[index]);
     playersBoxHtml.innerHTML += `
         <div class="player-${index}-box">
             <div class="player-${index}-name">${player.name}</div>
