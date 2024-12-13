@@ -17,6 +17,7 @@ interface PlayerInterface {
     money: number;
     emoji: string | HTMLDivElement;
     steps?: number;
+    element: HTMLElement;
 }
 
 const monopolyGameArray: MonopolyGameInterface[] = [
@@ -351,81 +352,117 @@ const players: PlayerInterface[] = [
         position: 0,
         money: 1500,
         emoji: "🕷",
+        element: document.getElementById("player-0-html") as HTMLDivElement
     },
     {
         name: "Player 2",
         position: 0,
         money: 1500,
         emoji: "🐞",
+        element: document.getElementById("player-1-html") as HTMLDivElement
     }
 ];
-const playersBoxHtml = document.querySelector(".players-box-html") as HTMLDivElement;
-// Initialize player elements
-players.forEach((player, index) => {
-    playersBoxHtml.innerHTML += `
-        <div class="player-${index}-box">
-            <div class="player-${index}-name">${player.name}</div>
-            <div class="player-${index}-emoji">${player.emoji}</div>
-            <div class="player-${index}-position">Position: ${player.position}</div>
-            <div class="player-${index}-money">Money: ${player.money}</div>
-            <div class="player-${index}-steps">Steps: </div>
-        </div>`
 
-});
-const playerFirst = document.querySelector(".player-0-box") as HTMLDivElement;
-const playerSecond = document.querySelector(".player-1-box") as HTMLDivElement;
-const playerFirstSteps = document.querySelector(".player-0-steps") as HTMLDivElement;
-const playerSecondSteps = document.querySelector(".player-1-steps") as HTMLDivElement;
-const playerFirstHtml = document.getElementById("player-0-html") as HTMLDivElement;
-const playerSecondHtml = document.getElementById("player-1-html") as HTMLDivElement;
+const playerInfo = document.getElementById("player-html") as HTMLDivElement;
 
-// playerFirst.onclick = (event) => {
-//     playerSecond.style.backgroundColor = "white";
-//     playerFirst.style.backgroundColor = "#b5b5b5";
-// }
-// playerSecond.onclick = (event) => {
-//     playerFirst.style.backgroundColor = "white";
-//     playerSecond.style.backgroundColor = "#b5b5b5";
-// }
+const rollDiceButton = document.querySelector(".dice-button") as HTMLButtonElement;
 
-const diceButton = document.querySelector(".dice-button") as HTMLButtonElement;
-const position1 = document.querySelector(".player-0-position") as HTMLDivElement;
-const position2 = document.querySelector(".player-1-position") as HTMLDivElement;
-let player1rollsDice: boolean = true;
+let currentPlayerIndex = 0;
 
-diceButton.onclick = () => {
-    const random = Math.floor(Math.random() * 6) + 1;
+const boardSize = 900;
+const cellsCoordinates = [
+    {id: 0, top: 10, left: 40},
+    {id: 1, top: 10, left: 120},
+    {id: 2, top: 10, left: 200},
+    {id: 3, top: 10, left: 280},
+    {id: 4, top: 10, left: 360},
+    {id: 5, top: 10, left: 440},
+    {id: 6, top: 10, left: 520},
+    {id: 7, top: 10, left: 600},
+    {id: 8, top: 10, left: 680},
+    {id: 9, top: 10, left: 760},
+    {id: 10, top: 10, left: 840},
+    {id: 11, top: 100, left: 840},//sukasi zemyn
+    {id: 12, top: 190, left: 840},
+    {id: 13, top: 280, left: 840},
+    {id: 14, top: 370, left: 840},
+    {id: 15, top: 460, left: 840},
+    {id: 16, top: 540, left: 840},
+    {id: 17, top: 620, left: 840},
+    {id: 18, top: 710, left: 840},
+    {id: 19, top: 710, left: 760},//sukasi kairen
+    {id: 20, top: 710, left: 680},
+    {id: 21, top: 710, left: 600},
+    {id: 22, top: 710, left: 520},
+    {id: 23, top: 710, left: 440},
+    {id: 24, top: 710, left: 360},
+    {id: 25, top: 710, left: 280},
+    {id: 25, top: 710, left: 280},
+    {id: 26, top: 710, left: 200},
+    {id: 27, top: 710, left: 120},
+    {id: 28, top: 710, left: 40},
+    {id: 29, top: 620, left: 40},//sukasi aukstyn
+    {id: 30, top: 540, left: 40},
+    {id: 31, top: 460, left: 40},
+    {id: 32, top: 370, left: 40},
+    {id: 33, top: 280, left: 40},
+    {id: 34, top: 190, left: 40},
+    {id: 35, top: 100, left: 40},
+];
 
-    if (player1rollsDice) {
-        playerFirstSteps.innerHTML = "";
-        playerFirstSteps.innerHTML = "Steps: " + random.toString();
-        player1rollsDice = false;
-        players[0].position += random;
-        position1.innerHTML = "Position: " + players[0].position
-        console.log(players[0].position);
+function movePlayer(player: PlayerInterface, position: number) {
+    cellsCoordinates.forEach((cell) => {
+        if (cell.id === position) {
+            player.element.style.top = `${cell.top}px`;
+            player.element.style.left = `${cell.left}px`;
 
-    } else {
-        playerSecondSteps.innerHTML = "";
-        playerSecondSteps.innerHTML = "Steps: " + random.toString();
-        player1rollsDice = true;
-        players[1].position += random;
-        position2.innerHTML = "Position: " + players[1].position
-        console.log(players[1].position);
-    }
-}
-
-const diceRoll = () => Math.floor(Math.random() * 6) + 1;
-
-diceButton.onclick = (event) => {
-    players.forEach((player, index) => {
-        console.log(player);
-        console.log(index)
-        const playerPosition = player.position;
-        const playerElement = document.querySelector(`.player-${index}`) as HTMLDivElement;
-        const playerPositionElement = playerElement.querySelector(".player-position") as HTMLDivElement;
-        const diceRollValue = diceRoll();
-        player.position = playerPosition + diceRollValue;
-        playerPositionElement.innerHTML = player.position.toString();
+            player.position = position;
+        }
     });
 }
 
+// Update the board
+function updateBoard() {
+    players.forEach((player) => {
+        movePlayer(player, player.position);
+    });
+}
+
+// Update player info
+function updatePlayerInfo() {
+    playerInfo.innerHTML = players
+        .map((player) =>
+            `<div>${player.name} ${player.emoji} : Position ${player.position}, Money: $${player.money}</div>`)
+        .join('');
+}
+
+// Roll the dice
+function rollDice() {
+    const diceRoll = Math.floor(Math.random() * 6) + 1;
+    console.log(`Dice roll: ${diceRoll}`);
+    const currentPlayer = players[currentPlayerIndex];
+    const newPosition = (currentPlayer.position + diceRoll) % boardSize;
+
+    movePlayer(currentPlayer, newPosition);
+
+    // Example penalty/reward
+    // if (newPosition % 11 === 0) {
+    //     currentPlayer.money -= 100;
+    // } else {
+    //     currentPlayer.money += 50;
+    // }
+
+    const landedCell = monopolyGameArray[gameBoardArray[newPosition]];
+    console.log(landedCell);
+
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    updatePlayerInfo();
+}
+
+
+// Initial setup
+players.forEach((player) => movePlayer(player, player.position));
+updatePlayerInfo();
+updateBoard();
+// Event listener
+rollDiceButton.addEventListener('click', rollDice);
